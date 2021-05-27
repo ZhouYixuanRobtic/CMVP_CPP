@@ -1,2 +1,8 @@
 # CMVP_CPP
-Repository for coding questions of "Computer Vision: A Modern Approach the Second Edition" in cpp
+
+This project is a repository for coding homework of *Computer Vision: A Modern Approach Second Edition*.
+
+### Dependencies
+
+**Eigen 3**
+
