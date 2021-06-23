@@ -4,5 +4,5 @@ This project is a repository for coding homework of *Computer Vision: A Modern A
 
 ### Dependencies
 
-**Eigen 3**
+**Eigen 3**, **VTK**,**OpenCV**
 

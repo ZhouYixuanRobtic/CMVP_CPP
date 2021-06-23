@@ -25,6 +25,10 @@ find_package(Eigen3 REQUIRED)
 # import OpenCV
 find_package(OpenCV REQUIRED)
 
+#import VTK
+find_package(VTK REQUIRED)
+
+
 # import glog
 include(./cmake/glog.cmake)
 
@@ -37,12 +41,14 @@ include_directories(
         ${GLOG_INCLUDE_DIRS}
         ${MKL_INCLUDE_DIRS}
         ${OpenCV_INCLUDE_DIRS}
+        ${VTK_INCLUDE_DIRS}
 )
 
 link_directories(
         /user/local/lib
         ${GLOG_LIBRARIES}
         ${MKL_LIB_DIRS}
+        ${VTK_LIBRARY_DIRS}
 )
 
 # src

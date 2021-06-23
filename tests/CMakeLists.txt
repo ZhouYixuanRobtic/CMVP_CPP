@@ -33,20 +33,11 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
 endif ()
 
 # Now simply link against gtest or gtest_main as needed. Eg
-add_executable(
-        example.unittest
-        chap1_unit_test.cpp
-)
+add_executable(example.unittest1 chap1_unit_test.cpp)
+target_link_libraries(example.unittest1 gtest_main libexample)
+add_test(NAME example.unittest1 COMMAND ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/example.unittest1)
 
-target_link_libraries(
-        example.unittest
-        gtest_main
-        libexample
-)
+add_executable(example.unittest2 chap2_unit_test.cpp)
+target_link_libraries(example.unittest2 gtest_main libexample ${OpenCV_LIBS})
+add_test(NAME example.unittest2 COMMAND ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/example.unittest2)
 
-add_test(
-        NAME
-        example.unittest
-        COMMAND
-        ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/example.unittest
-)

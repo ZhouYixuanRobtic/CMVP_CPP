@@ -4,6 +4,8 @@ file(
         GLOB_RECURSE all_files
         Chapter1/*.cpp
         Chapter1/*.h
+        Chapter2/*.cpp
+        Chapter2/*.h
 )
 
 target_sources(
@@ -12,9 +14,10 @@ target_sources(
         ${all_files}
 )
 
-target_link_directories(
+target_link_libraries(
         libexample
         PUBLIC
         ${GLOG_LIBRARIES}
         ${OpenCV_LIBS}
+        ${VTK_LIBRARIES}
 )
