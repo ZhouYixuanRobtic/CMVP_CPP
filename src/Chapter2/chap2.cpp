@@ -114,12 +114,12 @@ cv::Mat PHOTOMETRIC_STEREO::getMesh() {
 void PHOTOMETRIC_STEREO::displayMesh(const cv::Mat &Z) const {
     /* creating visualization pipeline which basically looks like this:
      vtkPoints -> vtkPolyData -> vtkPolyDataMapper -> vtkActor -> vtkRenderer */
-    vtkSmartPointer <vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
-    vtkSmartPointer <vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
-    vtkSmartPointer <vtkPolyDataMapper> modelMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-    vtkSmartPointer <vtkActor> modelActor = vtkSmartPointer<vtkActor>::New();
-    vtkSmartPointer <vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-    vtkSmartPointer <vtkCellArray> vtkTriangles = vtkSmartPointer<vtkCellArray>::New();
+    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+    vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
+    vtkSmartPointer<vtkPolyDataMapper> modelMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    vtkSmartPointer<vtkActor> modelActor = vtkSmartPointer<vtkActor>::New();
+    vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+    vtkSmartPointer<vtkCellArray> vtkTriangles = vtkSmartPointer<vtkCellArray>::New();
 
     /* insert x,y,z coords */
     for (int y = 0; y < HEIGHT; y++) {
@@ -129,7 +129,7 @@ void PHOTOMETRIC_STEREO::displayMesh(const cv::Mat &Z) const {
     }
 
     /* setup the connectivity between grid points */
-    vtkSmartPointer <vtkTriangle> triangle = vtkSmartPointer<vtkTriangle>::New();
+    vtkSmartPointer<vtkTriangle> triangle = vtkSmartPointer<vtkTriangle>::New();
     triangle->GetPointIds()->SetNumberOfIds(3);
     for (int i = 0; i < HEIGHT - 1; i++) {
         for (int j = 0; j < WIDTH - 1; j++) {
@@ -147,10 +147,10 @@ void PHOTOMETRIC_STEREO::displayMesh(const cv::Mat &Z) const {
     polyData->SetPolys(vtkTriangles);
 
     /* create two lights */
-    vtkSmartPointer <vtkLight> light1 = vtkSmartPointer<vtkLight>::New();
+    vtkSmartPointer<vtkLight> light1 = vtkSmartPointer<vtkLight>::New();
     light1->SetPosition(-1, 1, 1);
     renderer->AddLight(light1);
-    vtkSmartPointer <vtkLight> light2 = vtkSmartPointer<vtkLight>::New();
+    vtkSmartPointer<vtkLight> light2 = vtkSmartPointer<vtkLight>::New();
     light2->SetPosition(1, -1, -1);
     renderer->AddLight(light2);
 
@@ -159,7 +159,7 @@ void PHOTOMETRIC_STEREO::displayMesh(const cv::Mat &Z) const {
     renderer->SetBackground(.45, .45, .9);
     renderer->SetBackground2(.0, .0, .0);
     renderer->GradientBackgroundOn();
-    vtkSmartPointer <vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+    vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
     renderWindow->AddRenderer(renderer);
     modelActor->SetMapper(modelMapper);
 
@@ -172,11 +172,11 @@ void PHOTOMETRIC_STEREO::displayMesh(const cv::Mat &Z) const {
     modelActor->GetProperty()->SetSpecularPower(8.0);
 
     renderer->AddActor(modelActor);
-    vtkSmartPointer <vtkRenderWindowInteractor> interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+    vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
     interactor->SetRenderWindow(renderWindow);
 
     /* export mesh */
-    vtkSmartPointer <vtkPLYWriter> plyExporter = vtkSmartPointer<vtkPLYWriter>::New();
+    vtkSmartPointer<vtkPLYWriter> plyExporter = vtkSmartPointer<vtkPLYWriter>::New();
     plyExporter->SetInputData(polyData);
     plyExporter->SetFileName("export.ply");
     plyExporter->SetColorModeToDefault();
