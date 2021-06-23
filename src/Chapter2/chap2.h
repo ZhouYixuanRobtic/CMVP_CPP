@@ -37,6 +37,7 @@ VTK_MODULE_INIT(vtkRenderingOpenGL);
 VTK_MODULE_INIT(vtkInteractionStyle);
 
 #include <Eigen/Dense>
+#include <Eigen/Core>
 #include <opencv2/core/eigen.hpp>
 
 class PHOTOMETRIC_STEREO {
@@ -49,21 +50,22 @@ private:
 
     std::vector<cv::Mat> modelImages;
 
-    cv::Mat LightsInv;
+    Eigen::MatrixXf LightsInv;
 
     cv::Mat Normals, Pgrads, Qgrads;
 
-    cv::Vec3f getLightDirecFromSphere(const cv::Mat &calib, const cv::Rect &bb) const;
+    Eigen::Vector3f getLightDirecFromSphere(const cv::Mat &calib, const cv::Rect &bb) const;
 
 
     static Eigen::MatrixXf
     pseudoInverse(const Eigen::MatrixXf &a, double epsilon = std::numeric_limits<double>::epsilon()) {
 
-        Eigen::JacobiSVD<Eigen::MatrixXf> svd(a, Eigen::ComputeFullU | Eigen::ComputeFullV);
+        Eigen::JacobiSVD<Eigen::MatrixXf> svd(a, Eigen::ComputeThinU | Eigen::ComputeThinV);
         double tolerance = epsilon * std::max(a.cols(), a.rows()) * svd.singularValues().array().abs()(0);
+
         return svd.matrixV() *
-               (svd.singularValues().array().abs() > tolerance).select(svd.singularValues().array().inverse(),
-                                                                       0).matrix().asDiagonal() *
+               (svd.singularValues().array() > tolerance).select(svd.singularValues().array().inverse(),
+                                                                 0).matrix().asDiagonal() *
                svd.matrixU().adjoint();
     }
 

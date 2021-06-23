@@ -1,7 +1,7 @@
 
 #include "chap2.h"
 
-cv::Vec3f PHOTOMETRIC_STEREO::getLightDirecFromSphere(const cv::Mat &Image, const cv::Rect &boundingbox) const {
+Eigen::Vector3f PHOTOMETRIC_STEREO::getLightDirecFromSphere(const cv::Mat &Image, const cv::Rect &boundingbox) const {
 
     const float radius = boundingbox.width / 2.0f;
 
@@ -18,7 +18,7 @@ cv::Vec3f PHOTOMETRIC_STEREO::getLightDirecFromSphere(const cv::Mat &Image, cons
     float y = (center.x - radius) / radius;
     float z = sqrt(1.0 - pow(x, 2.0) - pow(y, 2.0));
 
-    return cv::Vec3f(x, y, z);
+    return {x, y, z};
 }
 
 void PHOTOMETRIC_STEREO::addModel(const std::string &model_path, int num_images) {
@@ -29,7 +29,7 @@ void PHOTOMETRIC_STEREO::addModel(const std::string &model_path, int num_images)
     cv::findContours(Mask.clone(), v, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
     assert(!v.empty());
     cv::Rect bb = cv::boundingRect(v[0]);
-    cv::Mat lights_tmp(NUM_IMAGES, 3, CV_32F);
+    Eigen::MatrixXf lights_tmp(NUM_IMAGES, 3);
     for (int i = 0; i < num_images; ++i) {
         cv::Mat Calib = cv::imread(CALIBRATION + std::to_string(i) + ".png", CV_LOAD_IMAGE_GRAYSCALE);
         cv::Mat tmp = cv::imread(model_path + std::to_string(i) + ".png", CV_LOAD_IMAGE_GRAYSCALE);
@@ -37,15 +37,13 @@ void PHOTOMETRIC_STEREO::addModel(const std::string &model_path, int num_images)
         cv::Mat Model;
         tmp.copyTo(Model, ModelMask);
         auto light = getLightDirecFromSphere(Calib, bb);
-        lights_tmp.at<float>(i, 0) = light[0];
-        lights_tmp.at<float>(i, 1) = light[1];
-        lights_tmp.at<float>(i, 2) = light[2];
+        lights_tmp.row(i) = light;
 
         HEIGHT = Calib.rows;
         WIDTH = Calib.cols;
         modelImages.emplace_back(Model);
     }
-    cv::invert(lights_tmp, LightsInv, cv::DECOMP_SVD);
+    LightsInv = pseudoInverse(lights_tmp);
     Normals = cv::Mat(HEIGHT, WIDTH, CV_32FC3, cv::Scalar::all(0));
     Pgrads = cv::Mat(HEIGHT, WIDTH, CV_32F, cv::Scalar::all(0));
     Qgrads = cv::Mat(HEIGHT, WIDTH, CV_32F, cv::Scalar::all(0));
@@ -60,9 +58,7 @@ cv::Mat PHOTOMETRIC_STEREO::getNormalMap() {
             for (int i = 0; i < NUM_IMAGES; i++) {
                 I[i] = modelImages[i].at<uchar>(cv::Point(x, y));
             }
-            Eigen::MatrixXf lights_inv;
-            cv::cv2eigen(LightsInv, lights_inv);
-            Eigen::VectorXf n = lights_inv * I;
+            Eigen::VectorXf n = LightsInv * I;
             n = n.norm() > 0 ? n.normalized() : n;
             n[2] = n[2] == 0 ? 1.0f : n[2];
             if (I.maxCoeff() < 0) {
